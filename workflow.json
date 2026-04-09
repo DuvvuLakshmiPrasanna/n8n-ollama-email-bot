@@ -1,0 +1,152 @@
+{
+  "name": "Local AI Email Auto-Responder",
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "INBOX",
+        "postProcessAction": "read",
+        "downloadAttachments": false,
+        "format": "resolved",
+        "options": {
+          "criteria": "UNSEEN"
+        }
+      },
+      "id": "1",
+      "name": "Email Read (IMAP)",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 1,
+      "position": [
+        260,
+        300
+      ],
+      "credentials": {
+        "imap": {
+          "id": "imap-credential-id",
+          "name": "IMAP Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.from.address }}",
+              "rightValue": "={{ $env.AUTO_REPLY_EMAIL || $env.SMTP_USER }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": "={{ $env.AUTO_REPLY_SUBJECT_MARKER || 'AI Auto-Reply:' }}",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "Loop Prevention IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"{{$env.OLLAMA_MODEL || 'llama3:8b'}}\",\n  \"stream\": false,\n  \"prompt\": \"You are a professional and helpful email assistant. A new email has arrived. Write only the reply body with no greeting or signature.\\n\\nSender: {{$json.from.address}}\\nSubject: {{$json.subject}}\\nBody:\\n{{$json.text || $json.html || ''}}\"\n}",
+        "options": {}
+      },
+      "id": "3",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        780,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.SMTP_USER }}",
+        "toEmail": "={{ $node[\"Email Read (IMAP)\"].json.from.address }}",
+        "subject": "=Re: {{ $node[\"Email Read (IMAP)\"].json.subject }}",
+        "text": "={{ $node[\"HTTP Request\"].json.response }}",
+        "options": {
+          "messageId": "={{ $node[\"Email Read (IMAP)\"].json.messageId }}"
+        }
+      },
+      "id": "4",
+      "name": "Send Reply (SMTP)",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        220
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credential-id",
+          "name": "SMTP Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Email Read (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Loop Prevention IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Prevention IF": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send Reply (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "local-ai-email-auto-responder",
+  "tags": []
+}
