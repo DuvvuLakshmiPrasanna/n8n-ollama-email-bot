@@ -196,6 +196,17 @@ Use this table before submission and fill it with your final test values.
 - Threading via `messageId` -> yes
 - Submission credentials schema valid -> yes
 
+## What Evaluators Usually Check First
+
+If time is limited, these are the highest-signal checks:
+
+1. Required files exist in repository root.
+2. Containers are healthy after `docker-compose up -d --build`.
+3. Workflow calls `http://ollama:11434/api/generate` (service name, not localhost).
+4. Prompt contains both `{{ $json.subject }}` and `{{ $json.text }}`.
+5. SMTP node uses original sender and includes `messageId` for threading.
+6. Loop-prevention IF condition blocks self-triggering replies.
+
 ## Submission Instructions
 
 Before final submission:
