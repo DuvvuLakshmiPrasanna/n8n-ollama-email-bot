@@ -305,6 +305,24 @@ Confirm all items are true before submitting:
 - Keep only placeholder values in `.env.example` and `submission.json` when sharing publicly.
 - Use app passwords where provider requires them.
 
+## FAQ
+
+Q: Why is `curl` not available in `n8n_responder`?
+
+A: Some base images do not include curl. Use `wget` or Node `fetch` from inside the container for connectivity tests.
+
+Q: Why does workflow import but no email is sent?
+
+A: Most often credentials are missing or workflow is not active. Recheck IMAP/SMTP credentials and activation state.
+
+Q: Why does reply not appear in the same conversation thread?
+
+A: Ensure SMTP node options include the original `messageId` mapping.
+
+Q: Why can health be `starting` for some time?
+
+A: First startup may download large model files. Wait until model pull and service initialization complete.
+
 ## Tech Stack
 
 - n8n (workflow orchestration)
