@@ -1,0 +1,16 @@
+{
+  "emailCredentials": {
+    "imap": {
+      "host": "imap.example.com",
+      "port": 993,
+      "user": "your-email@example.com",
+      "password": "your-imap-password"
+    },
+    "smtp": {
+      "host": "smtp.example.com",
+      "port": 587,
+      "user": "your-email@example.com",
+      "password": "your-smtp-password"
+    }
+  }
+}
