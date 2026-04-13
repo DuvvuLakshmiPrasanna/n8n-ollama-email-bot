@@ -33,7 +33,7 @@
           "conditions": [
             {
               "leftValue": "={{ $json.from.address }}",
-              "rightValue": "={{ $env.AUTO_REPLY_EMAIL || $env.SMTP_USER }}",
+              "rightValue": "prasannayadav2468@gmail.com",
               "operator": {
                 "type": "string",
                 "operation": "notEquals"
@@ -41,7 +41,7 @@
             },
             {
               "leftValue": "={{ $json.subject }}",
-              "rightValue": "={{ $env.AUTO_REPLY_SUBJECT_MARKER || 'AI Auto-Reply:' }}",
+              "rightValue": "AI Auto-Reply:",
               "operator": {
                 "type": "string",
                 "operation": "notContains"
@@ -65,7 +65,7 @@
         "url": "http://ollama:11434/api/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"{{$env.OLLAMA_MODEL || 'llama3:8b'}}\",\n  \"stream\": false,\n  \"prompt\": \"You are a professional and helpful email assistant. A new email has arrived. Write only the reply body with no greeting or signature.\\n\\nSender: {{$json.from.address}}\\nSubject: {{$json.subject}}\\nBody:\\n{{$json.text || $json.html || ''}}\"\n}",
+        "jsonBody": "={\n  \"model\": \"llama3:8b\",\n  \"stream\": false,\n  \"prompt\": \"You are a professional and helpful email assistant. A new email has arrived. Write only the reply body with no greeting or signature.\\n\\nSender: {{$json.from.address}}\\nSubject: {{$json.subject}}\\nBody:\\n{{$json.text || $json.html || ''}}\"\n}",
         "options": {}
       },
       "id": "3",
@@ -79,7 +79,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.SMTP_USER }}",
+        "fromEmail": "prasannayadav2468@gmail.com",
         "toEmail": "={{ $node[\"Email Read (IMAP)\"].json.from.address }}",
         "subject": "=Re: {{ $node[\"Email Read (IMAP)\"].json.subject }}",
         "text": "={{ $node[\"HTTP Request\"].json.response }}",

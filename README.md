@@ -97,8 +97,10 @@ Important variables in `.env`:
 - `OLLAMA_MODEL=llama3:8b`
 - `IMAP_HOST`, `IMAP_PORT`, `IMAP_USER`, `IMAP_PASSWORD`
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`
-- `AUTO_REPLY_EMAIL` for self-email guard
-- `AUTO_REPLY_SUBJECT_MARKER` for loop marker guard
+- `AUTO_REPLY_EMAIL` for local documentation and testing
+- `AUTO_REPLY_SUBJECT_MARKER` for local documentation and testing
+
+The current `workflow.json` uses explicit values for the loop guard and SMTP sender so it does not depend on n8n expression access to environment variables at runtime.
 
 Never commit real credentials. Keep `.env.example` with placeholders only.
 
@@ -258,6 +260,13 @@ No reply email sent:
 
 - Validate IMAP/SMTP credentials in n8n
 - Confirm workflow is activated
+
+## GitHub
+
+Repository: [https://github.com/DuvvuLakshmiPrasanna/n8n-ollama-email-bot](https://github.com/DuvvuLakshmiPrasanna/n8n-ollama-email-bot)
+
+Use GitHub for source control, sharing, and submitting the finished project.
+
 - Check IF node did not block message
 
 Reply not in same thread:
