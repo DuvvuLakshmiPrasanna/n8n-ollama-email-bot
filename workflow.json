@@ -71,8 +71,10 @@
         "url": "http://ollama:11434/api/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ ({\n  model: \"llama3:8b\",\n  stream: false,\n  keep_alive: \"24h\",\n  options: {\n    num_predict: 110,\n    temperature: 0.3\n  },\n  prompt: \"You are a professional email assistant.\\n\\nReply to the following email.\\n\\nSender: \" + ($node[\"Email Read (IMAP)\"].json.from?.address || \"\") + \"\\nSubject: \" + ($node[\"Email Read (IMAP)\"].json.subject || \"\") + \"\\nMessage:\\n\" + (($node[\"Email Read (IMAP)\"].json.text || $node[\"Email Read (IMAP)\"].json.html || \"\").toString()) + \"\\n\\nRules:\\n- Start directly with a greeting.\\n- Do not add any preface like 'Here is your reply' or 'Here is a concise and helpful reply'.\\n- Do not use placeholders such as [Recipient].\\n- Be polite, short, and professional.\\n- Keep it under 90 words total.\\n- End with: Best regards,\\nPrasanna AI Assistant\"\n}) }}",
-        "options": {}
+        "jsonBody": "={{ ({\n  model: \"llama3:8b\",\n  stream: false,\n  keep_alive: \"24h\",\n  options: {\n    num_predict: 110,\n    temperature: 0.3\n  },\n  prompt: \"You are a professional email assistant.\\n\\nReply to the following email.\\n\\nSender: \" + ($node[\"Email Read (IMAP)\"].json.from?.address || \"\") + \"\\nSubject: \" + ($node[\"Email Read (IMAP)\"].json.subject || \"\") + \"\\nMessage:\\n\" + (($node[\"Email Read (IMAP)\"].json.text || $node[\"Email Read (IMAP)\"].json.html || \"\").toString().slice(0, 2200)) + \"\\n\\nRules:\\n- Start directly with a greeting.\\n- Do not add any preface like 'Here is your reply' or 'Here is a concise and helpful reply'.\\n- Do not use placeholders such as [Recipient].\\n- Be polite, short, and professional.\\n- Keep it under 90 words total.\\n- End with: Best regards,\\nPrasanna AI Assistant\"\n}) }}",
+        "options": {
+          "timeout": 600000
+        }
       },
       "id": "3",
       "name": "HTTP Request",
