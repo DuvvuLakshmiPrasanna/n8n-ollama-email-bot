@@ -21,14 +21,20 @@
       ],
       "credentials": {
         "imap": {
-          "id": "imap-credential-id",
-          "name": "IMAP Account"
+          "id": "WQlmcfRJZX9K4EQw",
+          "name": "IMAP account"
         }
       }
     },
     {
       "parameters": {
         "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
           "combinator": "and",
           "conditions": [
             {
@@ -65,7 +71,7 @@
         "url": "http://ollama:11434/api/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"llama3:8b\",\n  \"stream\": false,\n  \"prompt\": \"You are a professional and helpful email assistant. A new email has arrived. Write only the reply body with no greeting or signature.\\n\\nSender: {{$json.from.address}}\\nSubject: {{$json.subject}}\\nBody:\\n{{$json.text || $json.html || ''}}\"\n}",
+        "jsonBody": "={{ ({\n  model: \"llama3:8b\",\n  stream: false,\n  keep_alive: \"24h\",\n  options: {\n    num_predict: 110,\n    temperature: 0.3\n  },\n  prompt: \"You are a professional email assistant.\\n\\nReply to the following email.\\n\\nSender: \" + ($node[\"Email Read (IMAP)\"].json.from?.address || \"\") + \"\\nSubject: \" + ($node[\"Email Read (IMAP)\"].json.subject || \"\") + \"\\nMessage:\\n\" + (($node[\"Email Read (IMAP)\"].json.text || $node[\"Email Read (IMAP)\"].json.html || \"\").toString()) + \"\\n\\nRules:\\n- Start directly with a greeting.\\n- Do not add any preface like 'Here is your reply' or 'Here is a concise and helpful reply'.\\n- Do not use placeholders such as [Recipient].\\n- Be polite, short, and professional.\\n- Keep it under 90 words total.\\n- End with: Best regards,\\nPrasanna AI Assistant\"\n}) }}",
         "options": {}
       },
       "id": "3",
@@ -80,9 +86,10 @@
     {
       "parameters": {
         "fromEmail": "prasannayadav2468@gmail.com",
-        "toEmail": "={{ $node[\"Email Read (IMAP)\"].json.from.address }}",
-        "subject": "=Re: {{ $node[\"Email Read (IMAP)\"].json.subject }}",
+        "toEmail": "={{ $node[\"Email Read (IMAP)\"].json.from?.value?.[0]?.address || $node[\"Email Read (IMAP)\"].json.from?.address || ($node[\"Email Read (IMAP)\"].json.from?.text || '').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/i)?.[0] || $node[\"Email Read (IMAP)\"].json.replyTo?.value?.[0]?.address || $node[\"Email Read (IMAP)\"].json.replyTo?.address || '' }}",
+        "subject": "={{ (() => { const s = (($node[\"Email Read (IMAP)\"].json.subject || \"Your Message\") + \"\").trim(); return /^re:/i.test(s) ? s : `Re: ${s}`; })() }}",
         "text": "={{ $node[\"HTTP Request\"].json.response }}",
+        "html": "=<p>{{ $node[\"HTTP Request\"].json.response }}</p>",
         "options": {
           "messageId": "={{ $node[\"Email Read (IMAP)\"].json.messageId }}"
         }
@@ -97,8 +104,8 @@
       ],
       "credentials": {
         "smtp": {
-          "id": "smtp-credential-id",
-          "name": "SMTP Account"
+          "id": "2b3UDzIqWVr35qLE",
+          "name": "SMTP account"
         }
       }
     }
